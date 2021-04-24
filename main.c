@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-const char* commandTempalte = "gsettings set org.gnome.desktop.background picture-uri /home/";
-
 void main( int argc, char* argv[] )
 {
+	system( "gsettings set org.gnome.desktop.background picture-uri /home/${USER}/.wallparers/pictures/wallpaper" );
+
 	FILE* f_log = fopen( "/tmp/.wallparer.log", "w+" );
 
 	if( !f_log )
@@ -14,29 +14,8 @@ void main( int argc, char* argv[] )
 		return;
 	}
 
-	system( "echo ${USER} > /tmp/.wallparer-username" );
-
-	FILE* f_user = fopen( "/tmp/.wallparer-username", "r" );
-
-	if( !f_user )
-	{
-		fprintf( f_log, "could not read username\n" );
-		fclose( f_log );
-		return;
-	}
-
-	char username[256] = {0};
-
-	fscanf( f_user, "%s", username );
-
-	fclose( f_user );
-
-	system( "rm /home/${USER}/.wallparers/pictures/*" );
-
-	system( "cp /home/${USER}/Pictures/Wallpapers/* /home/${USER}/.wallparers/pictures/" );
-
-	system( "ls /home/${USER}/.wallparers/pictures > /home/${USER}/.wallparers/list" );
-
+	system( "ls /home/${USER}/Pictures/Wallpapers > /home/${USER}/.wallparers/list" );
+	
 	FILE* f_list = fopen( "/home/dimitis/.wallparers/list", "r" );
 
 	if( !f_list )
@@ -46,30 +25,18 @@ void main( int argc, char* argv[] )
 		return;
 	}
 
-	int count = 0;
-	char buffer[1000] = {0};
+	int count = 0, max_len = 0;
+	char buffer[257] = {0};
 
-	while( fgets( buffer, 1000, f_list ) )
+	while( fgets( buffer, 257, f_list ) )
 	{
 		count += 1;
 
-		/*if( strchr( buffer, ' ' ) )
-		{
-			do{
-				char command[1000] = "mv /home/${USER}/.wallparer/pictures/";
-				strcat( command, buffer );
-				
-				strcat( command, " /home/${USER}/.wallparer/pictures/" );
-
-				*strchr( buffer, ' ' ) = '_';
-
-				strcat( command, buffer );
-
-				printf( "%s\n", command );
-				//system( command );
-			}while( strchr( buffer, ' ' ) );
-		}*/
+		int t_len = strlen( buffer );
+		max_len = t_len > max_len ? t_len : max_len;
 	}
+
+	max_len += 1;
 
 	if( !feof( f_list ) )
 	{
@@ -79,40 +46,31 @@ void main( int argc, char* argv[] )
 		return;
 	}
 
-	fclose( f_list );
+	rewind( f_list );
 
-	system( "ls /home/${USER}/.wallparers/pictures > /home/${USER}/.wallparers/list" );
-
-	f_list = fopen( "/home/dimitis/.wallparers/list", "r" );
-
-	if( !f_list )
-	{
-		fprintf( f_log, "Wallparer error: file was not created!\n" );
-		fclose( f_log );
-		return;
-	}
-
-	char a_list[count][1000];
+	char a_list[count][max_len];
 
 	int i, j;
 
 	for( i = 0; i < count; ++i)
 	{
-		for( j = 0; j < 1000; ++j )
-		{
-			a_list[i][j] = 0;
-		}
+		memset( a_list[i], 0, max_len );
 	}
-
+	
 	for( i = 0; i < count; ++i )
 	{
-		if( !fgets( a_list[i], 1000, f_list ) )
+		if( !fgets( a_list[i], max_len, f_list ) )
 		{
 			fclose( f_list );
 			
 			fprintf( f_log, "Wallparers error: can't read from file!\n" );
 			fclose( f_log );
 			return;
+		}
+
+		while( strchr(a_list[i], '\n' ) )
+		{
+			*strchr(a_list[i], '\n') = 0;
 		}
 	}
 
@@ -121,24 +79,19 @@ void main( int argc, char* argv[] )
 		printf( "Choose a wallparer:\n" );
 		for( i = 0; i < count; ++i )
 		{
-
-			if( strlen( a_list[i] ) > 80 )
+			if( strlen( a_list[i] ) > 76 )
 			{
 				printf( "%d. %s\n", i, a_list[i] );
 				continue;
 			}
 		
-			char buffer[80] = {0};
+			char buffer[77] = {0};
 
 			while( 1 )
 			{
-				while( strchr(buffer, '\n' ) )
+				if( i >= count || strlen( buffer ) > 76 || strlen( buffer ) + strlen( a_list[i] ) > 76 )
 				{
-					*strchr(buffer, '\n') = ' ';
-				}
-
-				if( i > count || strlen( buffer ) > 80 || strlen( buffer ) + strlen( a_list[i] ) > 80 )
-				{
+					i -= 1;
 					break;
 				}
 				
@@ -153,32 +106,47 @@ void main( int argc, char* argv[] )
 				continue;
 			}
 
-			printf( "\t%s\n", buffer );
+			printf( "    %s\n", buffer );
 		}
 
 		printf( ">> " );
 
 		int inp;
 
-		scanf( "%u", &inp );
+		scanf( "%d", &inp );
 		
 		if( inp == -1 )
 		{
 			return;
 		}
 
-		if( inp > count || inp < 0 )
+		if( inp >= count || inp < 0 )
 		{
 			printf( "Wrong choise!" );
 		}
 		else
 		{
-			char b_command[1000] = {0};
+			char b_command[1000 + max_len];
 
-			strcpy( b_command, commandTempalte );
-			strcat( b_command, username );
-			strcat( b_command, "/.wallparers/pictures/" );
-			strcat( b_command, a_list[inp] );
+			memset( b_command, 0, 1000 + max_len );
+
+			strcat( b_command, "cp /home/${USER}/Pictures/Wallpapers/" );
+
+			int last = 0;
+
+			for( i = 0; i < strlen( a_list[inp] ); ++i )
+			{
+				if( a_list[inp][i] == ' ' )
+				{
+					strncat( b_command, a_list[inp], i - last );
+					strcat( b_command, "\\ " ); 
+					last = i + 1;
+				}
+			}
+
+			strcat( b_command, &a_list[inp][last] );
+
+			strcat( b_command, " /home/${USER}/.wallparers/pictures/wallpaper" );
 
 			//printf( "%s\n", b_command );
 			system( b_command );
