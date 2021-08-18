@@ -12,7 +12,7 @@ int main( int argc, char* argv[] )
 
 	if (argc == 1)
 	{
-		wallparerer->chooseWallparer();
+		wallparerer->setWallpaper();
 	} else if (string(argv[1]) == string("menu")){
 		wallparerer->talkToUser();
 	} else {

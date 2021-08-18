@@ -7,21 +7,7 @@ using namespace std;
 ifstream* SystemUser::readingFile;
 ofstream* SystemUser::writingFile;
 
-
-string getUserHomeDir()
-{
-	system( "echo ~/ > /tmp/homedir" );
-
-	SystemUser::openFileForReading( "/tmp/homedir" );
-	
-	string str = SystemUser::readFromFile();
-
-	SystemUser::closeReadingFile();
-
-	return str;
-}
-
-void setWallparerPath()
+void SystemUser::setWallparerPath()
 {
 	if( system( SET_WALLPARERER_COMMAND ) )
 	{
@@ -29,7 +15,7 @@ void setWallparerPath()
 	}
 }
 
- void writeListOfFilesInFile()
+void SystemUser::writeListOfFilesInFile()
 {
 	if( system( GET_FILE_NAMES_IN_THE_DIR_COMMAND ) )
 	{
@@ -37,7 +23,7 @@ void setWallparerPath()
 	}
 }
 
- void openFileForWriting( string path, ios_base::openmode mode = ios_base::out)
+void SystemUser::openFileForWriting( string path, ios_base::openmode mode)
 {
 	SystemUser::writingFile = new ofstream( path, mode );
 
@@ -47,7 +33,7 @@ void setWallparerPath()
 	}
 }
 
- void openFileForReading( string path, ios_base::openmode mode = ios_base::in )
+void SystemUser::openFileForReading( string path, ios_base::openmode mode )
 {
 	SystemUser::readingFile = new ifstream( path, mode );
 
@@ -57,7 +43,7 @@ void setWallparerPath()
 	}
 }
 
-string readFromFile()
+string SystemUser::readFromFile()
 {
 	if (!SystemUser::readingFile)
 	{
@@ -77,7 +63,7 @@ string readFromFile()
 	return str;
 }
 
-void closeReadingFile()
+void SystemUser::closeReadingFile()
 {
 	if(SystemUser::readingFile && SystemUser::readingFile->is_open())
 	{
@@ -87,9 +73,9 @@ void closeReadingFile()
 
 		SystemUser::readingFile = NULL;
 	}
-}	
+}
 
-void closeWritingFile()
+void SystemUser::closeWritingFile()
 {
 	if(SystemUser::writingFile && SystemUser::writingFile->is_open())
 	{
@@ -101,7 +87,7 @@ void closeWritingFile()
 	}
 }
 
-string replaceSpecialCharacters( string str )
+string SystemUser::replaceSpecialCharacters( string str )
 {
 	int index = 0;
 
@@ -114,7 +100,7 @@ string replaceSpecialCharacters( string str )
 	return str;
 }
 
-vector<string>* getListOfFilesInTheFolder( string path = "/.wallparers/list" )
+vector<string>* SystemUser::getListOfFilesInTheFolder( string path )
 {
 	SystemUser::writeListOfFilesInFile();
 
@@ -130,4 +116,17 @@ vector<string>* getListOfFilesInTheFolder( string path = "/.wallparers/list" )
 	SystemUser::closeReadingFile();
 
 	return list_of_names;
+}
+
+string SystemUser::getUserHomeDir()
+{
+	system( "echo ~/ > /tmp/homedir" );
+
+	SystemUser::openFileForReading( "/tmp/homedir" );
+	
+	string str = SystemUser::readFromFile();
+
+	SystemUser::closeReadingFile();
+
+	return str;
 }

@@ -1,5 +1,6 @@
 #include <string>
 
+#include "SystemUser.hpp"
 #include "WallpaperKeeper.hpp"
 
 string WallpaperKeeper::fixString (string str, int len = 0)
@@ -79,7 +80,7 @@ void WallpaperKeeper::printNamesList()
 	}
 }
 
-void WallpaperKeeper::chooseWallparer()
+string WallpaperKeeper::chooseWallparer()
 {
 	string inp;
 	do
@@ -116,16 +117,23 @@ void WallpaperKeeper::chooseWallparer()
 	if (inp == "0")
 	{
 		cout << endl;
-		return;
+		return "";
 	}
 
 	int index = stoi(inp) - 1;
 
-	(*names)[index] = SystemUser::replaceSpecialCharacters((*names)[index]);
-	
-	//cout << (string(COPY_FILE_COMMAND) + (*names)[inp] + string(DESTINATION_STRING)).c_str();
+	return SystemUser::replaceSpecialCharacters((*names)[index]);
+}
 
-	system((string(COPY_FILE_COMMAND) + (*names)[index] + string(DESTINATION_STRING)).c_str());
+void WallpaperKeeper::setWallpaper()
+{
+	string path = this->chooseWallparer();
+
+	if (path == "") {
+		return;
+	}
+
+	system((string(COPY_FILE_COMMAND) + path + string(DESTINATION_STRING)).c_str());
 	cout << endl;
 }
 
@@ -147,7 +155,7 @@ void WallpaperKeeper::talkToUser()
 
 		if (choice == "1") 
 		{
-			chooseWallparer();
+			setWallpaper();
 			continue;
 		}
 		else if (choice == "0")

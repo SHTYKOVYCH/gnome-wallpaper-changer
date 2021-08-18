@@ -24,7 +24,9 @@ public:
 
 	void printNamesList();
 
-	void chooseWallparer();
+	string chooseWallparer();
+
+	void setWallpaper();
 
 	void talkToUser();
 };
