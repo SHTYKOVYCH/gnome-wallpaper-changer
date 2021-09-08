@@ -12,9 +12,11 @@ int main( int argc, char* argv[] )
 
 	if (argc == 1)
 	{
-		wallparerer->setWallpaper();
+		wallparerer->setWallpaper(wallparerer->chooseWallparer());
 	} else if (string(argv[1]) == string("menu")){
 		wallparerer->talkToUser();
+	} else if (string(argv[1]) == string("random")){
+		wallparerer->setRandomWallpaper();
 	} else {
 		cout << "Wrong command! Usage: no command - choose wallpaper, menu - show menu" << endl;
 	}
