@@ -26,7 +26,9 @@ public:
 
 	string chooseWallparer();
 
-	void setWallpaper();
+	void setWallpaper(string);
+
+	void setRandomWallpaper();
 
 	void talkToUser();
 };

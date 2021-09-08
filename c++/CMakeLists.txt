@@ -19,7 +19,7 @@ set(SOURCES
 	./src/SystemUser.cpp
 	./src/WallpaperKeeper.cpp)
 
-set( CXX_FLAGS "-g" )
+set( CXX_FLAGS "-g -O2" )
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_FLAGS}" )
 

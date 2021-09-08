@@ -68,6 +68,7 @@ WallpaperKeeper::WallpaperKeeper()
 void WallpaperKeeper::printMenu()
 {
 	cout << "\t1. Choose wallparerer" << endl;
+	cout << "\t2. Random" << endl;
 	cout << "\t0. Exit" << endl;
 }
 
@@ -125,16 +126,23 @@ string WallpaperKeeper::chooseWallparer()
 	return SystemUser::replaceSpecialCharacters((*names)[index]);
 }
 
-void WallpaperKeeper::setWallpaper()
+void WallpaperKeeper::setWallpaper( string path )
 {
-	string path = this->chooseWallparer();
-
-	if (path == "") {
+	cout << endl;
+	if (path == "")
+	{
 		return;
 	}
 
 	system((string(COPY_FILE_COMMAND) + path + string(DESTINATION_STRING)).c_str());
-	cout << endl;
+}
+
+void WallpaperKeeper::setRandomWallpaper()
+{
+	srand(time(NULL));
+	string path = (*names)[rand() % names->size()];
+
+	setWallpaper(SystemUser::replaceSpecialCharacters(path));
 }
 
 void WallpaperKeeper::talkToUser()
@@ -155,8 +163,12 @@ void WallpaperKeeper::talkToUser()
 
 		if (choice == "1") 
 		{
-			setWallpaper();
+			setWallpaper(chooseWallparer());
 			continue;
+		}
+		else if (choice == "2")
+		{
+			setRandomWallpaper();
 		}
 		else if (choice == "0")
 		{
