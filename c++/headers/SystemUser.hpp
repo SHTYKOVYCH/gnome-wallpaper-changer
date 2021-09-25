@@ -16,6 +16,8 @@ public:
 	static ifstream* readingFile;
 	static ofstream* writingFile;
 
+    static int executeShellCommand(string);
+
 	static string getUserHomeDir();
 
 	static void setWallparerPath();
