@@ -10,7 +10,7 @@ class Exception
 private:
 	string msg;
 public:
-	Exception( string );
+	explicit Exception( string );
 
 	string getMessage();
 };

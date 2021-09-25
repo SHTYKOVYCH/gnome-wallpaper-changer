@@ -3,7 +3,3 @@
 #define GET_FILE_NAMES_IN_THE_DIR_COMMAND "ls /home/${USER}/Pictures/Wallpapers > /home/${USER}/.wallparers/list"
 #define COPY_FILE_COMMAND "cp /home/${USER}/Pictures/Wallpapers/" 
 #define DESTINATION_STRING " /home/${USER}/.wallparers/pictures/wallpaper"
-
-#define SCREEN_WIDTH
-
-

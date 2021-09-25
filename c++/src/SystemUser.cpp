@@ -9,7 +9,7 @@ ofstream* SystemUser::writingFile;
 
 void SystemUser::setWallparerPath()
 {
-	if( system( SET_WALLPARERER_COMMAND ) )
+	if( SystemUser::executeShellCommand( SET_WALLPARERER_COMMAND ) )
 	{
 		throw Exception("GSettings error: set path operation failed");
 	}
@@ -17,7 +17,7 @@ void SystemUser::setWallparerPath()
 
 void SystemUser::writeListOfFilesInFile()
 {
-	if( system( GET_FILE_NAMES_IN_THE_DIR_COMMAND ) )
+	if( SystemUser::executeShellCommand( GET_FILE_NAMES_IN_THE_DIR_COMMAND ) )
 	{
 		throw Exception("System error: can't get file names");
 	}
@@ -120,7 +120,7 @@ vector<string>* SystemUser::getListOfFilesInTheFolder( string path )
 
 string SystemUser::getUserHomeDir()
 {
-	system( "echo ~/ > /tmp/homedir" );
+	SystemUser::executeShellCommand( "echo ~/ > /tmp/homedir" );
 
 	SystemUser::openFileForReading( "/tmp/homedir" );
 	
@@ -129,4 +129,8 @@ string SystemUser::getUserHomeDir()
 	SystemUser::closeReadingFile();
 
 	return str;
+}
+
+int SystemUser::executeShellCommand(string command) {
+    return system(command.c_str());
 }
